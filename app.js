@@ -82,10 +82,9 @@ config.get('bindings').map(
 );
 
 if (config.get('environment') !== 'production') {
-    new WebpackDevServer(webpack(webpackConfig), {
+    const devServer = new WebpackDevServer({
         historyApiFallback: true,
-        disableHostCheck: true,
-        publicPath: webpackConfig.output.publicPath,
+        allowedHosts: 'all',
         hot: true,
         proxy: {
             '*': {
@@ -94,16 +93,18 @@ if (config.get('environment') !== 'production') {
                 changeOrigin: true,
             },
         },
-        stats: {
-            cached: false,
-            cachedAssets: false,
-            colors: { level: 2 },
+        devMiddleware: {
+            publicPath: webpackConfig.output.publicPath,
+            stats: {
+                cached: false,
+                cachedAssets: false,
+                colors: { level: 2 },
+            },
         },
-        watchOptions: {
-            aggregateTimeout: 300,
-            poll: 1000,
-        },
-    }).listen(config.get('devServerPort'), (err, result) => {
+        port: config.get('devServerPort'),
+    }, webpack(webpackConfig));
+
+    devServer.startCallback((err) => {
         if (err) {
             return logger.info(err);
         }

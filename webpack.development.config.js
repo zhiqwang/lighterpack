@@ -1,5 +1,4 @@
 const path = require('path');
-const webpack = require('webpack');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 
 module.exports = {
@@ -7,21 +6,18 @@ module.exports = {
     entry: {
         app: [
             'whatwg-fetch',
-            'webpack/hot/dev-server',
-            'webpack-dev-server/client?http://local.lighterpack.com:8080/',
             './client/css/lighterpack.scss',
             './client/lighterpack.js',
         ],
         share: [
             './client/css/share.scss',
-            'webpack/hot/dev-server',
-            'webpack-dev-server/client?http://local.lighterpack.com:8080/',
         ],
     },
     output: {
         path: path.resolve(__dirname, './dist'),
         publicPath: '/dist/',
         filename: '[name].js',
+        hashFunction: 'sha256',
     },
     module: {
         rules: [
@@ -63,7 +59,6 @@ module.exports = {
     },
     devServer: {
         historyApiFallback: true,
-        noInfo: true,
         hot: true,
     },
     performance: {
@@ -71,6 +66,5 @@ module.exports = {
     },
     plugins: [
         new VueLoaderPlugin(),
-        new webpack.HotModuleReplacementPlugin(),
     ],
 };

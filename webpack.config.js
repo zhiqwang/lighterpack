@@ -38,6 +38,7 @@ module.exports = {
         path: path.resolve(__dirname, './public/dist'),
         publicPath: '/dist/',
         filename: '[name].[chunkhash].js',
+        hashFunction: 'sha256',
     },
     module: {
         rules: [
