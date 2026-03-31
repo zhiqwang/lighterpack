@@ -45,11 +45,20 @@ module.exports = {
                 test: /\.scss$/,
                 use: [
                     'vue-style-loader',
-                    'css-loader',
+                    {
+                        loader: 'css-loader',
+                        options: {
+                            url: {
+                                filter: (url) => !url.startsWith('/'),
+                            },
+                        },
+                    },
                     {
                         loader: 'sass-loader',
                         options: {
-                            implementation: require('sass'),
+                            sassOptions: {
+                                silenceDeprecations: ['mixed-decls'],
+                            },
                         },
                     },
                 ],

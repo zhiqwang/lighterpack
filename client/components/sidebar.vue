@@ -24,12 +24,12 @@ $sidebarPadding: 20px;
     }
 
     h1 {
-        @include fullBleedLeft();
-
         height: 60px;
         margin: 0 -20px 20px 0;
         padding: 20px 0 20px;
         position: relative;
+
+        @include fullBleedLeft();
 
         span {
             color: #aaa;
