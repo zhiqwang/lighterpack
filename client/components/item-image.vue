@@ -1,10 +1,51 @@
 <style lang="scss">
+.itemImageGallery {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 10px 0;
+}
 
+.itemImageGalleryThumb {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+    height: 60px;
+    object-fit: cover;
+    width: 60px;
+}
+
+.itemImageRemoveBtn {
+    background: rgba(0, 0, 0, 0.5);
+    border: none;
+    border-radius: 50%;
+    color: #fff;
+    cursor: pointer;
+    font-size: 12px;
+    height: 20px;
+    line-height: 20px;
+    position: absolute;
+    right: -5px;
+    text-align: center;
+    top: -5px;
+    width: 20px;
+}
+
+.itemImageThumbContainer {
+    display: inline-block;
+    position: relative;
+}
 </style>
 
 <template>
     <div>
         <modal id="itemImageDialog" :shown="shown" @hide="shown = false">
+            <div v-if="item && item.images && item.images.length" class="itemImageGallery">
+                <div v-for="(img, idx) in item.images" :key="idx" class="itemImageThumbContainer">
+                    <img :src="getThumbUrl(img)" class="itemImageGalleryThumb" @click="viewImage(img)">
+                    <button class="itemImageRemoveBtn" title="Remove" @click="removeImage(idx)">×</button>
+                </div>
+            </div>
             <div class="columns">
                 <div class="lpHalf">
                     <h2>Add image by URL</h2>
@@ -16,23 +57,16 @@
                 </div>
                 <div class="lpHalf">
                     <h2>Upload image from disk</h2>
-                    <template v-if="!item.image">
-                        <p class="imageUploadDescription">
-                            Your image will be hosted on imgur.
-                        </p>
-                        <button id="itemImageUpload" class="lpButton" @click="triggerImageUpload">
-                            Upload Image
-                        </button>
-                        <a class="lpHref close" @click="shown = false">Cancel</a>
-                        <p v-if="uploading">
-                            Uploading image...
-                        </p>
-                    </template>
-                    <template v-if="item.image">
-                        <button id="itemImageUpload" class="lpButton" @click="removeItemImage">
-                            Remove Image
-                        </button>
-                    </template>
+                    <p class="imageUploadDescription">
+                        Your image will be hosted on imgur.
+                    </p>
+                    <button id="itemImageUpload" class="lpButton" @click="triggerImageUpload">
+                        Upload Image
+                    </button>
+                    <a class="lpHref close" @click="shown = false">Cancel</a>
+                    <p v-if="uploading">
+                        Uploading image...
+                    </p>
                 </div>
             </div>
         </modal>
@@ -62,13 +96,41 @@ export default {
         bus.$on('updateItemImage', (item) => {
             this.shown = true;
             this.item = item;
-            this.imageUrl = item.imageUrl;
+            this.imageUrl = '';
         });
     },
     methods: {
+        getThumbUrl(img) {
+            if (img.image) {
+                return `https://i.imgur.com/${img.image}s.jpg`;
+            }
+            return img.imageUrl || '';
+        },
+        viewImage(img) {
+            let url;
+            if (img.image) {
+                url = `https://i.imgur.com/${img.image}l.jpg`;
+            } else {
+                url = img.imageUrl || '';
+            }
+            bus.$emit('viewItemImage', url);
+        },
+        removeImage(index) {
+            this.$store.commit('removeItemImageByIndex', { item: this.item, index });
+            // Keep the old single-image field in sync
+            if (this.item.images && this.item.images.length === 0) {
+                this.$store.commit('removeItemImage', this.item);
+            }
+        },
         saveImageUrl() {
+            if (!this.imageUrl) return;
+            this.$store.commit('addItemImage', {
+                item: this.item,
+                imageData: { image: '', imageUrl: this.imageUrl, caption: '' },
+            });
+            // Also update legacy single-image field for backward compat
             this.$store.commit('updateItemImageUrl', { imageUrl: this.imageUrl, item: this.item });
-            this.shown = false;
+            this.imageUrl = '';
         },
         triggerImageUpload() {
             this.$refs.imageInput.click();
@@ -105,16 +167,18 @@ export default {
             })
                 .then((response) => {
                     this.uploading = false;
-                    this.$store.commit('updateItemImage', { image: response.data.id, item: this.item });
-                    this.shown = false;
+                    const imgId = response.data.id;
+                    // Add to multi-image array
+                    this.$store.commit('addItemImage', {
+                        item: this.item,
+                        imageData: { image: imgId, imageUrl: '', caption: '' },
+                    });
+                    // Also update legacy single-image field
+                    this.$store.commit('updateItemImage', { image: imgId, item: this.item });
                 }).catch((response) => {
                     this.uploading = false;
                     alert('Upload failed! If this issue persists please file a bug.');
                 });
-        },
-        removeItemImage() {
-            this.$store.commit('removeItemImage', this.item);
-            this.item.image = '';
         },
     },
 };

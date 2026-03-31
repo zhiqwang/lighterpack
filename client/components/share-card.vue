@@ -253,7 +253,7 @@ export default {
             ctx.fillStyle = '#aaa';
             ctx.font = '11px sans-serif';
             ctx.textAlign = 'center';
-            ctx.fillText(this.list.totalQty + ' items · LighterPack', width / 2, y);
+            ctx.fillText(`${this.list.totalQty} items · LighterPack`, width / 2, y);
             ctx.textAlign = 'left';
 
             const dataUrl = canvas.toDataURL('image/png');

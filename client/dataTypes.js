@@ -64,6 +64,7 @@ Category.prototype.addItem = function (partialCategoryItem) {
         consumable: false,
         star: 0,
         itemId: null,
+        // Valid values: 'none', 'packed', 'buyLocal', 'arranged', 'missing'
         checkStatus: 'none',
         checkNote: '',
         _isNew: false,

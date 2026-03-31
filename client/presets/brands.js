@@ -1,5 +1,5 @@
 module.exports = [
-    'Arc\'teryx',
+    "Arc'teryx",
     'Big Agnes',
     'Black Diamond',
     'Camp',
@@ -47,7 +47,7 @@ module.exports = [
     'Oboz',
     'Osprey',
     'Outdoor Research',
-    'Pa\'lante Packs',
+    "Pa'lante Packs",
     'Patagonia',
     'Petzl',
     'Platypus',

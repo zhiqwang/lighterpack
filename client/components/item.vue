@@ -49,6 +49,16 @@
     }
 }
 
+.lpImageCount {
+    background: rgba(0, 0, 0, 0.6);
+    border-radius: 8px;
+    color: #fff;
+    font-size: 10px;
+    padding: 1px 5px;
+    position: relative;
+    top: -8px;
+}
+
 </style>
 
 <template>
@@ -58,6 +68,7 @@
         </span>
         <span v-if="library.optionalFields['images']" class="lpImageCell">
             <img v-if="thumbnailImage" class="lpItemImage" :src="thumbnailImage" @click="viewItemImage()">
+            <span v-if="imageCount > 1" class="lpImageCount">{{ imageCount }}</span>
         </span>
         <input v-model="item.name" v-focus-on-create="categoryItem._isNew" type="text" class="lpName lpSilent" placeholder="Name" @input="saveItem">
         <input v-model="item.description" type="text" class="lpDescription lpSilent" placeholder="Description" @input="saveItem">
@@ -137,6 +148,9 @@ export default {
                 return this.item.imageUrl;
             }
             return '';
+        },
+        imageCount() {
+            return (this.item.images && this.item.images.length) || (this.thumbnailImage ? 1 : 0);
         },
     },
     watch: {
