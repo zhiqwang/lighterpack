@@ -4,7 +4,7 @@ LighterPack helps you track the gear you bring on adventures.
 
 Prerequisites
 -----------
-- [Node.js](https://nodejs.org/) (v16 or higher recommended)
+- [Node.js](https://nodejs.org/) (v18 LTS or higher recommended)
 - [npm](https://www.npmjs.com/)
 - [MongoDB](https://www.mongodb.com/) (running locally or a remote instance)
 
