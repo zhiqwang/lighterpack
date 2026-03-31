@@ -95,6 +95,7 @@
                 <span slot="target"><a class="lpAdd" @click="newList"><i class="lpSprite lpSpriteAdd" />Add new list</a></span>
                 <div slot="content">
                     <a class="lpAdd" @click="newList"><i class="lpSprite lpSpriteAdd" />Add new list</a>
+                    <a class="lpAdd" @click="newListFromTemplate"><i class="lpSprite lpSpriteAdd" />New from template</a>
                     <a class="lpAdd" @click="importCSV"><i class="lpSprite lpSpriteUpload" />Import CSV</a>
                     <a class="lpCopy" @click="copyList"><i class="lpSprite lpSpriteCopy" />Copy a list</a>
                 </div>
@@ -148,6 +149,9 @@ export default {
         },
         importCSV() {
             bus.$emit('importCSV');
+        },
+        newListFromTemplate() {
+            bus.$emit('newListWizard');
         },
         handleListReorder() {
             const $lists = document.getElementById('lists');

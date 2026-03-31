@@ -24,6 +24,7 @@ const Item = function ({ id, unit }) {
     this.image = '';
     this.imageUrl = '';
     this.url = '';
+    this.images = [];
 
     return this;
 };
@@ -63,6 +64,8 @@ Category.prototype.addItem = function (partialCategoryItem) {
         consumable: false,
         star: 0,
         itemId: null,
+        checkStatus: 'none',
+        checkNote: '',
         _isNew: false,
     };
     assignIn(tempCategoryItem, partialCategoryItem);
@@ -161,6 +164,7 @@ const List = function ({ id, library }) {
     this.chart = null;
     this.description = '';
     this.externalId = '';
+    this.checkMode = false;
 
     this.totalWeight = 0;
     this.totalWornWeight = 0;
@@ -329,7 +333,7 @@ List.prototype.load = function (input) {
 };
 
 const Library = function () {
-    this.version = '0.3';
+    this.version = '0.4';
     this.idMap = {};
     this.items = [];
     this.categories = [];
@@ -443,14 +447,18 @@ Library.prototype.removeList = function (id) {
     }
 };
 
-Library.prototype.copyList = function (id) {
+Library.prototype.copyList = function (id, excludeCategories) {
     const oldList = this.getListById(id);
     if (!oldList) return;
+
+    excludeCategories = excludeCategories || [];
 
     const copiedList = this.newList();
 
     copiedList.name = `Copy of ${oldList.name}`;
     for (const i in oldList.categoryIds) {
+        if (excludeCategories.indexOf(oldList.categoryIds[i]) !== -1) continue;
+
         const oldCategory = this.getCategoryById(oldList.categoryIds[i]);
         const copiedCategory = this.newCategory({ list: copiedList });
 
@@ -571,6 +579,9 @@ Library.prototype.load = function (serializedLibrary) {
     if (serializedLibrary.version === '0.2') {
         this.upgrade02to03(serializedLibrary);
     }
+    if (serializedLibrary.version === '0.3') {
+        this.upgrade03to04(serializedLibrary);
+    }
 
     this.items = [];
 
@@ -628,6 +639,45 @@ Library.prototype.upgrade02to03 = function (serializedLibrary) {
     this.renameCategoryIds(serializedLibrary);
     this.fixDuplicateIds(serializedLibrary);
     serializedLibrary.version = '0.3';
+};
+
+Library.prototype.upgrade03to04 = function (serializedLibrary) {
+    // Migrate single image fields to images array
+    serializedLibrary.items.forEach((item) => {
+        if (!item.images) {
+            item.images = [];
+            if (item.image || item.imageUrl) {
+                item.images.push({
+                    image: item.image || '',
+                    imageUrl: item.imageUrl || '',
+                    caption: '',
+                });
+            }
+        }
+    });
+
+    // Add checkStatus and checkNote to categoryItems
+    serializedLibrary.categories.forEach((category) => {
+        if (category.categoryItems) {
+            category.categoryItems.forEach((categoryItem) => {
+                if (typeof categoryItem.checkStatus === 'undefined') {
+                    categoryItem.checkStatus = 'none';
+                }
+                if (typeof categoryItem.checkNote === 'undefined') {
+                    categoryItem.checkNote = '';
+                }
+            });
+        }
+    });
+
+    // Add checkMode to lists
+    serializedLibrary.lists.forEach((list) => {
+        if (typeof list.checkMode === 'undefined') {
+            list.checkMode = false;
+        }
+    });
+
+    serializedLibrary.version = '0.4';
 };
 
 Library.prototype.sequenceShouldBeCorrect = function (serializedLibrary) {
