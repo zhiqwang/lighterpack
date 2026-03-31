@@ -65,7 +65,6 @@
         </div>
         <list-summary v-if="!isListNew" :list="list" />
 
-
         <div style="clear: both;" />
 
         <div v-if="library.optionalFields['listDescription']" id="listDescriptionContainer">
@@ -112,7 +111,7 @@ export default {
             return this.$store.getters.activeList;
         },
         categories() {
-            return this.list.categoryIds.map(id => this.library.getCategoryById(id));
+            return this.list.categoryIds.map((id) => this.library.getCategoryById(id));
         },
         isListNew() {
             return this.list.totalWeight === 0;

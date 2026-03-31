@@ -142,7 +142,7 @@ export default {
             let item;
             let filteredItems = [];
             if (!this.searchText) {
-                filteredItems = this.library.items.map(item => Vue.util.extend({}, item));
+                filteredItems = this.library.items.map((item) => Vue.util.extend({}, item));
             } else {
                 const lowerCaseSearchText = this.searchText.toLowerCase();
 
@@ -169,7 +169,7 @@ export default {
             return this.library.getListById(this.library.defaultListId);
         },
         categories() {
-            return this.list.categoryIds.map(id => this.library.getCategoryById(id));
+            return this.list.categoryIds.map((id) => this.library.getCategoryById(id));
         },
     },
     watch: {

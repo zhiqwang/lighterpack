@@ -390,12 +390,12 @@ function imageUpload(req, res, user) {
         const path = files.image.path;
         const formData = {
             image: fs.createReadStream(path),
-            type: "file"
+            type: 'file',
         };
         request.post({
             url: 'https://api.imgur.com/3/image',
             headers: { Authorization: `Client-ID ${config.get('imgurClientID')}` },
-            formData
+            formData,
         }, (e, r, body) => {
             if (e) {
                 logWithRequest(req, 'imgur post fail!');

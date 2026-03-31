@@ -10,39 +10,32 @@ const uuid = require('uuid');
 
 const { logger } = require('./server/log.js');
 
-morgan.token('username', function getUsername (req) {
-    return req.lighterpackusername
-});
+morgan.token('username', (req) => req.lighterpackusername);
 
-
-morgan.token('requestid', function getUsername (req) {
-    return req.uuid
-});
+morgan.token('requestid', (req) => req.uuid);
 
 const app = express();
 app.enable('trust proxy');
 
-app.use(function (req, res, next) {
+app.use((req, res, next) => {
     req.uuid = uuid.v4();
     next();
 });
 
-app.use(morgan(function (tokens, req, res) {
-    return JSON.stringify({
-        'timestamp': tokens.date(req, res, 'iso'),
-        'requestid': tokens.requestid(req, res),
-        "remote-addr": tokens['remote-addr'](req, res),
-        'method': tokens.method(req, res),
-        'http-version': tokens['http-version'](req, res),
-        'user-agent': tokens['user-agent'](req, res),
-        'url': tokens.url(req, res),
-        'status': tokens.status(req, res),
-        'referrer': tokens.referrer(req, res),
-        'content-length': tokens.res(req, res, 'content-length'),
-        'response-time': tokens['response-time'](req, res),
-        'username': tokens.username(req, res),
-    })
-}, { stream: logger.stream.write }));
+app.use(morgan((tokens, req, res) => JSON.stringify({
+    timestamp: tokens.date(req, res, 'iso'),
+    requestid: tokens.requestid(req, res),
+    'remote-addr': tokens['remote-addr'](req, res),
+    method: tokens.method(req, res),
+    'http-version': tokens['http-version'](req, res),
+    'user-agent': tokens['user-agent'](req, res),
+    url: tokens.url(req, res),
+    status: tokens.status(req, res),
+    referrer: tokens.referrer(req, res),
+    'content-length': tokens.res(req, res, 'content-length'),
+    'response-time': tokens['response-time'](req, res),
+    username: tokens.username(req, res),
+}), { stream: logger.stream.write }));
 
 const oneDay = 86400000;
 
@@ -63,7 +56,7 @@ app.use('/', endpoints);
 app.use('/', moderationEndpoints);
 app.use('/', views);
 
-logger.info("Starting up Lighterpack...");
+logger.info('Starting up Lighterpack...');
 
 if (config.get('environment') === 'production') {
     webpackConfig = require('./webpack.config');

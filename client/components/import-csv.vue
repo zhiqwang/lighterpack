@@ -108,7 +108,6 @@ export default {
             const arrData = [[]];
             let arrMatches = null;
 
-
             const objPattern = new RegExp(
                 (
                     `(\\${strDelimiter}|\\r?\\n|\\r|^)`

@@ -16,7 +16,8 @@ class AssetJsonPlugin {
                 require('fs').writeFileSync(
                     path.join(__dirname, '/public/dist/', 'assets.json'), JSON.stringify(assetData),
                 );
-            });
+            },
+        );
     }
 }
 

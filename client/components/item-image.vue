@@ -37,7 +37,7 @@
             </div>
         </modal>
         <form id="imageUpload" ref="imageUploadForm">
-            <input id="image" type="file" name="image" ref="imageInput" @change="uploadImage">
+            <input id="image" ref="imageInput" type="file" name="image" @change="uploadImage">
         </form>
     </div>
 </template>
