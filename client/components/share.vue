@@ -11,13 +11,14 @@
             <div slot="content" class="lpFields">
                 <div class="lpField">
                     <label for="shareUrl">Share your list</label>
-                    <input id="shareUrl" v-select-on-bus="'show-share-box'"  v-select-on-focus type="text" :value="shareUrl">
+                    <input id="shareUrl" v-select-on-bus="'show-share-box'" v-select-on-focus type="text" :value="shareUrl">
                 </div>
                 <div class="lpField">
                     <label for="embedUrl">Embed your list</label>
                     <textarea id="embedUrl" v-select-on-focus>&lt;script src="{{ this.baseUrl }}/e/{{ this.externalId }}"&gt;&lt;/script&gt;&lt;div id="{{ this.externalId }}"&gt;&lt;/div&gt;</textarea>
                 </div>
                 <a id="csvUrl" :href="csvUrl" target="_blank" class="lpHref"><i class="lpSprite lpSpriteDownload" />Export to CSV</a>
+                <a class="lpHref" @click="showShareCard"><i class="lpSprite lpSpriteDownload" />Generate Share Card</a>
             </div>
         </PopoverHover>
     </span>
@@ -62,6 +63,9 @@ export default {
         },
     },
     methods: {
+        showShareCard() {
+            bus.$emit('showShareCard');
+        },
         focusShare(evt) {
             if (!this.list.externalId) {
                 return fetchJson('/externalId', {

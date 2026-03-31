@@ -45,6 +45,26 @@
     }
 }
 
+.lpCheckModeToggle {
+    align-items: center;
+    display: flex;
+    gap: 15px;
+    margin: 15px 0 5px;
+}
+
+.lpCheckModeLabel {
+    align-items: center;
+    cursor: pointer;
+    display: flex;
+    font-weight: 600;
+    gap: 6px;
+}
+
+.lpResetChecklist {
+    cursor: pointer;
+    font-size: 13px;
+}
+
 </style>
 
 <template>
@@ -65,6 +85,15 @@
         </div>
         <list-summary v-if="!isListNew" :list="list" />
 
+        <div class="lpCheckModeToggle">
+            <label class="lpCheckModeLabel">
+                <input type="checkbox" :checked="list.checkMode" @change="toggleCheckMode">
+                <span>📋 Check Mode</span>
+            </label>
+            <a v-if="list.checkMode" class="lpResetChecklist lpHref" @click="resetChecklist">Reset checklist</a>
+        </div>
+
+        <checklist-progress v-if="list.checkMode" :list="list" />
 
         <div style="clear: both;" />
 
@@ -73,19 +102,26 @@
             <textarea id="listDescription" v-model="list.description" @input="updateListDescription" />
         </div>
 
-        <ul class="lpCategories">
-            <category v-for="category in categories" :key="category.id" :category="category" />
-        </ul>
+        <template v-if="list.checkMode">
+            <category-checklist v-for="category in categories" :key="category.id" :category="category" />
+        </template>
+        <template v-else>
+            <ul class="lpCategories">
+                <category v-for="category in categories" :key="category.id" :category="category" />
+            </ul>
 
-        <hr>
+            <hr>
 
-        <a class="lpAdd addCategory" @click="newCategory"><i class="lpSprite lpSpriteAdd" />Add new category</a>
+            <a class="lpAdd addCategory" @click="newCategory"><i class="lpSprite lpSpriteAdd" />Add new category</a>
+        </template>
     </div>
 </template>
 
 <script>
 import category from './category.vue';
 import listSummary from './list-summary.vue';
+import checklistProgress from './checklist-progress.vue';
+import categoryChecklist from './category-checklist.vue';
 
 const dragula = require('dragula');
 
@@ -94,6 +130,8 @@ export default {
     components: {
         listSummary,
         category,
+        checklistProgress,
+        categoryChecklist,
         categoryDragStartIndex: false,
         itemDragId: false,
     },
@@ -112,7 +150,7 @@ export default {
             return this.$store.getters.activeList;
         },
         categories() {
-            return this.list.categoryIds.map(id => this.library.getCategoryById(id));
+            return this.list.categoryIds.map((id) => this.library.getCategoryById(id));
         },
         isListNew() {
             return this.list.totalWeight === 0;
@@ -138,6 +176,17 @@ export default {
         },
         updateListDescription() {
             this.$store.commit('updateListDescription', this.list);
+        },
+        toggleCheckMode() {
+            this.$store.commit('setCheckMode', { listId: this.list.id, checkMode: !this.list.checkMode });
+        },
+        resetChecklist() {
+            const callback = function () {
+                this.$store.commit('resetChecklist', this.list.id);
+            };
+            bus.$emit('initSpeedbump', callback, {
+                body: 'Are you sure you want to reset the checklist? All check statuses and notes will be cleared.',
+            });
         },
         handleItemReorder() {
             if (this.itemDrake) {

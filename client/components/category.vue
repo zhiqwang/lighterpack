@@ -61,7 +61,7 @@ export default {
             return this.$store.state.library;
         },
         itemContainers() {
-            return this.category.categoryItems.map(categoryItem => ({ categoryItem, item: this.library.getItemById(categoryItem.itemId) }));
+            return this.category.categoryItems.map((categoryItem) => ({ categoryItem, item: this.library.getItemById(categoryItem.itemId) }));
         },
     },
     methods: {

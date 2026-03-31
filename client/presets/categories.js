@@ -1,0 +1,16 @@
+module.exports = [
+    'Shelter',
+    'Sleep System',
+    'Pack',
+    'Clothing - Worn',
+    'Clothing - Packed',
+    'Insulation',
+    'Rain Gear',
+    'Cook System',
+    'Water',
+    'Food',
+    'Electronics',
+    'Hygiene',
+    'Navigation',
+    'Miscellaneous',
+];

@@ -202,9 +202,61 @@ const store = new Vuex.Store({
             args.category.removeItem(args.itemId);
             state.library.getListById(state.library.defaultListId).calculateTotals();
         },
-        copyList(state, listId) {
-            const copiedList = state.library.copyList(listId);
+        copyList(state, args) {
+            let listId;
+            let excludeCategories = [];
+            if (typeof args === 'object' && args.listId) {
+                listId = args.listId;
+                excludeCategories = args.excludeCategories || [];
+            } else {
+                listId = args;
+            }
+            const copiedList = state.library.copyList(listId, excludeCategories);
             state.library.defaultListId = copiedList.id;
+        },
+        setCheckMode(state, { listId, checkMode }) {
+            const list = state.library.getListById(listId);
+            list.checkMode = checkMode;
+        },
+        updateCheckStatus(state, { category, itemId, checkStatus }) {
+            const categoryItem = category.getCategoryItemById(itemId);
+            if (categoryItem) {
+                categoryItem.checkStatus = checkStatus;
+            }
+        },
+        updateCheckNote(state, { category, itemId, checkNote }) {
+            const categoryItem = category.getCategoryItemById(itemId);
+            if (categoryItem) {
+                categoryItem.checkNote = checkNote;
+            }
+        },
+        resetChecklist(state, listId) {
+            const list = state.library.getListById(listId);
+            if (!list) return;
+            list.categoryIds.forEach((catId) => {
+                const category = state.library.getCategoryById(catId);
+                if (category) {
+                    category.categoryItems.forEach((categoryItem) => {
+                        categoryItem.checkStatus = 'none';
+                        categoryItem.checkNote = '';
+                    });
+                }
+            });
+        },
+        addItemImage(state, { item, imageData }) {
+            const storeItem = state.library.getItemById(item.id);
+            if (!storeItem.images) {
+                storeItem.images = [];
+            }
+            storeItem.images.push(imageData);
+            state.library.optionalFields.images = true;
+            bus.$emit('optionalFieldChanged');
+        },
+        removeItemImageByIndex(state, { item, index }) {
+            const storeItem = state.library.getItemById(item.id);
+            if (storeItem.images && index >= 0 && index < storeItem.images.length) {
+                storeItem.images.splice(index, 1);
+            }
         },
         importCSV(state, importData) {
             const list = state.library.newList({});

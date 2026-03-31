@@ -76,6 +76,7 @@
                 </span>
                 <input id="lpListName" :value="list.name" type="text" class="lpListName lpSilent headerItem" value="New List" placeholder="List Name" autocomplete="off" name="lastpass-disable-search" @input="updateListName">
                 <share />
+                <syncStatus />
                 <listSettings />
                 <accountDropdown v-if="isSignedIn" />
                 <span v-else class="headerItem signInRegisterButtons">
@@ -105,12 +106,14 @@
         <speedbump />
         <copyList />
         <importCSV />
+        <newListWizard />
         <itemImage />
         <itemViewImage />
         <itemLink />
         <help />
         <account />
         <accountDelete />
+        <shareCard />
     </div>
 </template>
 
@@ -118,11 +121,13 @@
 import globalAlerts from '../components/global-alerts.vue';
 import sidebar from '../components/sidebar.vue';
 import share from '../components/share.vue';
+import syncStatus from '../components/sync-status.vue';
 import listSettings from '../components/list-settings.vue';
 import accountDropdown from '../components/account-dropdown.vue';
 import forgotPassword from './forgot-password.vue';
 import account from '../components/account.vue';
 import accountDelete from '../components/account-delete.vue';
+import shareCard from '../components/share-card.vue';
 import help from '../components/help.vue';
 import list from '../components/list.vue';
 
@@ -131,6 +136,7 @@ import itemViewImage from '../components/item-view-image.vue';
 import itemLink from '../components/item-link.vue';
 import importCSV from '../components/import-csv.vue';
 import copyList from '../components/copy-list.vue';
+import newListWizard from '../components/new-list-wizard.vue';
 import speedbump from '../components/speedbump.vue';
 
 export default {
@@ -138,15 +144,18 @@ export default {
     components: {
         sidebar,
         share,
+        syncStatus,
         listSettings,
         accountDropdown,
         forgotPassword,
         account,
         accountDelete,
+        shareCard,
         help,
         list,
         itemLink,
         copyList,
+        newListWizard,
         importCSV,
         itemImage,
         itemViewImage,
